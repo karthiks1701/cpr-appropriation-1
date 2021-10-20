@@ -49,7 +49,7 @@ class CPRGridEnv(MultiAgentEnv, gym.Env):
         n_agents,
         grid_width,
         grid_height,
-        fov_squares_front=20,
+        fov_squares_front=21,
         fov_squares_side=10,
         global_obs=False,
         tagging_ability=True,
@@ -612,6 +612,13 @@ class CPRGridEnv(MultiAgentEnv, gym.Env):
             fov,
         )
 
+        # Set color for orientation cells
+        # fov = np.where(
+        #     fov == utils.GridCell.ORIENTATION,
+        #     colors.to_rgb(self.GRID_CELL_COLORS[utils.GridCell.ORIENTATION]),
+        #     fov,
+        # )
+
         # Set color for current agent
         x = (
             self.fov_squares_side
@@ -635,8 +642,9 @@ class CPRGridEnv(MultiAgentEnv, gym.Env):
                 else 0
             )
             fov = np.rot90(fov, k=k).copy()
-
-        return fov
+        
+        fov = np.clip(fov, 0., 1.0)
+        return fov.astype(np.float32)
 
     def _respawn_resources(self):
         """
